@@ -1,15 +1,17 @@
 import logging
 import json
 from fastapi import APIRouter, Request, HTTPException
-from app.services.installation_token import installationToken
-from app.services.github_client import github_client
 from app.services.webhook import webhook
 
 webhook_router = APIRouter()
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(name)s - [Router] - %(message)s",)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(name)s - [Router] - %(message)s",
+)
 logger = logging.getLogger("Router")
+
 
 @webhook_router.post("/")
 async def handle_webhook(request: Request):
@@ -34,4 +36,3 @@ async def handle_webhook(request: Request):
     except Exception as e:
         logger.exception(f"Unexpected error in webhook handler: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
-

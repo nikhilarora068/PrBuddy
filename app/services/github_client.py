@@ -6,7 +6,10 @@ from app.services.installation_token import installationToken
 from app.core.config import config
 
 # Configure logging
-logging.basicConfig(level=logging.INFO,format="%(asctime)s - %(levelname)s - %(name)s - [GitHubAPIClient] - %(message)s",)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(name)s - [GitHubAPIClient] - %(message)s",
+)
 logger = logging.getLogger("GitHubAPIClient")
 
 
@@ -15,7 +18,14 @@ class GitHubAPIClient:
 
     def __init__(self):
         """Initialize GitHub API client"""
-        self.auth_headers = installationToken.get_installation_token_main()
+        try:
+            self.auth_headers = installationToken.get_installation_token_main()
+            logger.info("GitHub API client initialized successfully.")
+        except Exception as e:
+            logger.exception(f"Failed to initialize GitHub API client: {str(e)}")
+            raise HTTPException(
+                status_code=500, detail="Failed to initialize GitHub API client"
+            )
 
     @staticmethod
     async def get_github_client_using_pat():
@@ -30,7 +40,8 @@ class GitHubAPIClient:
             jwt_token = installationToken.generate_jwt()
             installation_id = installationToken.get_installation_id(jwt_token)
             integration = GithubIntegration(
-                installationToken.APP_ID, installationToken.PRIVATE_KEY.replace("\\n", "\n")
+                installationToken.APP_ID,
+                installationToken.PRIVATE_KEY.replace("\\n", "\n"),
             )
             access_token = integration.get_access_token(installation_id).token
             return Github(access_token)
@@ -67,7 +78,9 @@ class GitHubAPIClient:
             logger.info(f"Fetched PR #{pr_number} from {repo_full_name}")
             return pr
         except Exception as e:
-            logger.error(f"Error fetching PR #{pr_number} from {repo_full_name}: {str(e)}")
+            logger.error(
+                f"Error fetching PR #{pr_number} from {repo_full_name}: {str(e)}"
+            )
             raise HTTPException(status_code=404, detail="Pull request not found")
 
     async def get_pr_diff(self, repo_full_name: str, pr_number: int):
@@ -82,13 +95,19 @@ class GitHubAPIClient:
                 logger.info(f"Fetched diff for PR #{pr_number} from {repo_full_name}")
                 return response.text
         except httpx.HTTPStatusError as e:
-            logger.error(f"HTTP error while fetching PR diff: {e.response.status_code} - {e.response.text}")
-            raise HTTPException(status_code=e.response.status_code, detail="Failed to fetch PR diff")
+            logger.error(
+                f"HTTP error while fetching PR diff: {e.response.status_code} - {e.response.text}"
+            )
+            raise HTTPException(
+                status_code=e.response.status_code, detail="Failed to fetch PR diff"
+            )
         except Exception as e:
             logger.error(f"Unexpected error fetching PR diff: {str(e)}")
             raise HTTPException(status_code=500, detail="Error fetching PR diff")
 
-    async def update_pr_description(self, repo_full_name: str, pr_number: int, description: str):
+    async def update_pr_description(
+        self, repo_full_name: str, pr_number: int, description: str
+    ):
         """Update the pull request description."""
         try:
             github = await self.get_github_client()
@@ -99,7 +118,9 @@ class GitHubAPIClient:
             return {"message": "PR description updated", "url": pr.html_url}
         except Exception as e:
             logger.error(f"Error updating PR description: {str(e)}")
-            raise HTTPException(status_code=400, detail="Failed to update PR description")
+            raise HTTPException(
+                status_code=400, detail="Failed to update PR description"
+            )
 
     async def add_pr_comment(self, repo_full_name: str, pr_number: int, comment: str):
         """Add a review comment to the PR."""
