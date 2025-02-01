@@ -19,13 +19,22 @@ PRBuddy is a FastAPI-based webhook service designed to integrate with a GitHub A
 
 ### Installation
 
-1. Installing dependencies
+1. Create virtual environment
+```python
+python -m venv .venv
+```
+
+2. Activate the virtual environment
+```python
+source .venv/bin/activate
+```
+
+3. Installing dependencies
 
 ```python
 pip install -r requirements.txt
 ```
-2. 
-Running the server
+4. Running the server
 
 ```python
 uvicorn main:app --host 0.0.0.0 --port 8000 --reload
