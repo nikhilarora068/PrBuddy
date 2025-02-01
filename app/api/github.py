@@ -4,34 +4,31 @@ from app.services.github_client import github_client
 github_router = APIRouter()
 
 
-OWNER="nikhilarora068"
-REPO_FULL_NAME="nikhilarora068/PrBuddy"
-PR_NUMBER=6
-summary = "This is a dummy summary"
-review_comment = "This is a dummy comment"
+DUMMY_SUMMARY = "This is a dummy summary"
+DUMMY_COMMENT = "This is a dummy comment"
 
 @github_router.get("/get-repo-details")
-async def get_repo_details():
-    repo = await github_client.get_repo(REPO_FULL_NAME)
+async def get_repo_details(repo_name: str):
+    repo = await github_client.get_repo(repo_name)
     return {"repo_details": repo.raw_data}
 
 @github_router.get("/get-pr-details")
-async def get_pr_details():
-    pr = await github_client.get_pr_details(REPO_FULL_NAME, PR_NUMBER)
+async def get_pr_details(repo_name: str, pr_number: int):
+    pr = await github_client.get_pr_details(repo_name, pr_number)
     return {"pr_details": pr.raw_data}
 
 @github_router.get("/get-pr-diff")
-async def get_pr_diff():
-    diff = await github_client.get_pr_diff(REPO_FULL_NAME, PR_NUMBER)
+async def get_pr_diff(repo_name: str, pr_number: int):
+    diff = await github_client.get_pr_diff(repo_name, pr_number)
     return {"pr_diff": diff}
 
 @github_router.get("/update-pr-description")
-async def update_pr_description():
-    response = await github_client.update_pr_description(REPO_FULL_NAME, PR_NUMBER, summary)
+async def update_pr_description(repo_name: str, pr_number: int):
+    response = await github_client.update_pr_description(repo_name, pr_number, DUMMY_SUMMARY)
     return {"update_response": response}
 
-@github_router.get("/update-pr-comment")
-async def update_pr_comment():
-    response = await github_client.add_pr_comment(REPO_FULL_NAME, PR_NUMBER, review_comment)
+@github_router.get("/add-pr-comment")
+async def add_pr_comment(repo_name: str, pr_number: int):
+    response = await github_client.add_pr_comment(repo_name, pr_number, DUMMY_COMMENT)
     return {"comment_response": response}
 
