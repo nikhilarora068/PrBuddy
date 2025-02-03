@@ -17,7 +17,7 @@ PR Buddy currently offers the following powerful features to enhance your develo
 ### Prerequisites
 
 - 🐍 Python 3.9+
-- 🐙 [GitHub App](https://github.com/apps/pull-request-buddy) (with private key, app ID, and webhook URL configured)
+- 🐙 [GitHub App](https://github.com/apps/prbuddy068) (with private key, app ID, and webhook URL configured)
 - 🔑 OpenAI API Key
 
 ### Installation
