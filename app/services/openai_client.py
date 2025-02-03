@@ -33,9 +33,7 @@ class OpenAIClient:
             return "Error: Empty prompt provided."
 
         try:
-            logger.info(
-                f"Sending request to OpenAI (truncated prompt): {prompt[:100]}..."
-            )
+            logger.info(f"Sending request to OpenAI: {prompt}")
             start_time = time.time()
 
             response = self.client.chat.completions.create(
@@ -53,7 +51,7 @@ class OpenAIClient:
             if response and response.choices:
                 generated_text = response.choices[0].message.content
                 logger.info(
-                    f"OpenAI response received in {execution_time}s (truncated output): {generated_text[:100]}..."
+                    f"OpenAI response received in {execution_time}s: {generated_text}"
                 )
                 return generated_text
             else:
@@ -61,7 +59,7 @@ class OpenAIClient:
                 raise HTTPException(status_code=500, detail="OpenAI response is empty.")
 
         except Exception as e:
-            logger.exception("OpenAI API call failed.")
+            logger.exception(f"OpenAI API call failed: {str(e)}")
             raise HTTPException(
                 status_code=500, detail="Failed to generate AI response"
             )

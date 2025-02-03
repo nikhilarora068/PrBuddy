@@ -19,8 +19,13 @@ class GitHubAPIClient:
     def __init__(self):
         """Initialize GitHub API client"""
         try:
-            self.auth_headers = installationToken.get_installation_token_main()
-            logger.info("GitHub API client initialized successfully.")
+            if config.GH_APP_AUTH_METHOD == "APP":
+                self.auth_headers = installationToken.get_installation_token_main()
+            else:
+                self.auth_headers = {"Authorization": f"Bearer {config.GH_PAT}"}
+            logger.info(
+                f"GitHub API client initialized using ${config.GH_APP_AUTH_METHOD} method"
+            )
         except Exception as e:
             logger.exception(f"Failed to initialize GitHub API client: {str(e)}")
             raise HTTPException(
@@ -134,6 +139,38 @@ class GitHubAPIClient:
         except Exception as e:
             logger.error(f"Error adding PR comment: {str(e)}")
             raise HTTPException(status_code=400, detail="Failed to add comment to PR")
+
+    async def add_inline_suggestion(
+        self,
+        repo_full_name: str,
+        pr_number: int,
+        file_path: str,
+        line: int,
+        suggestion: str,
+    ):
+        """Add an inline suggestion to a PR."""
+        try:
+            github = await self.get_github_client()
+            repo = github.get_repo(repo_full_name)
+            pr = repo.get_pull(pr_number)
+            commit = pr.get_commits().reversed[0]
+            pr.create_review_comment(
+                body=suggestion,
+                commit=commit,
+                path=file_path,
+                start_side="RIGHT",
+                line=line,
+                side="RIGHT",
+            )
+            logger.info(
+                f"Added inline suggestion to {file_path}:{line} in PR #{pr_number}"
+            )
+            return {"message": "Inline suggestion added", "url": pr.html_url}
+        except Exception as e:
+            logger.error(f"Error adding inline suggestion: {str(e)}")
+            raise HTTPException(
+                status_code=400, detail="Failed to add inline suggestion"
+            )
 
 
 # Instantiate the client

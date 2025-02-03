@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.services.openapi_client import openai_client
+from app.services.openai_client import openai_client
 
 openapi_router = APIRouter()
 

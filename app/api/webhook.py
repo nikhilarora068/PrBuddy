@@ -13,7 +13,7 @@ logging.basicConfig(
 logger = logging.getLogger("Router")
 
 
-@webhook_router.post("/")
+@webhook_router.post("")
 async def handle_webhook(request: Request):
     """Handles incoming GitHub PR webhooks."""
     try:
